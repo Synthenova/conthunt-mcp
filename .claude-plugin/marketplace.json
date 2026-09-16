@@ -1,0 +1,25 @@
+{
+  "name": "conthunt",
+  "owner": {
+    "name": "Synthenova",
+    "email": "nirmalvelu2000@gmail.com"
+  },
+  "metadata": {
+    "description": "Hosted ContHunt MCP and agent skill"
+  },
+  "plugins": [
+    {
+      "name": "conthunt",
+      "source": "./",
+      "description": "Discover and research viral social content on TikTok, Instagram Reels, and YouTube Shorts.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Synthenova"
+      },
+      "homepage": "https://conthunt.app",
+      "repository": "https://github.com/Synthenova/conthunt-mcp",
+      "license": "MIT",
+      "keywords": ["conthunt", "mcp", "tiktok", "instagram", "youtube", "agent-skills"]
+    }
+  ]
+}

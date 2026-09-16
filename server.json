@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.synthenova/conthunt",
+  "title": "ContHunt",
+  "description": "Discover and research viral social content on TikTok, Instagram Reels, and YouTube Shorts.",
+  "websiteUrl": "https://conthunt.app",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/Synthenova/conthunt-mcp",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://mcp.conthunt.app/icons/dark.png",
+      "mimeType": "image/png",
+      "sizes": ["800x800"],
+      "theme": "dark"
+    },
+    {
+      "src": "https://github.com/Synthenova/conthunt-mcp/raw/main/assets/logo-dark.png",
+      "mimeType": "image/png",
+      "sizes": ["800x800"],
+      "theme": "dark"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.conthunt.app/"
+    }
+  ]
+}

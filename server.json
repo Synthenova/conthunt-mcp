@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.synthenova/conthunt",
   "title": "ContHunt",
-  "description": "Discover and research viral social content on TikTok, Instagram Reels, and YouTube Shorts.",
+  "description": "Aggregates viral videos across all social media platforms, analyzes every frame and uncovers niche gold before it trends.",
   "websiteUrl": "https://conthunt.app",
   "version": "1.0.0",
   "repository": {

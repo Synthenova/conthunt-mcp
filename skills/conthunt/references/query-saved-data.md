@@ -13,6 +13,12 @@ bound this reader to the authenticated user through database permissions and
 RLS. Do not choose a user, add user filters, change roles, or create connections.
 Use query_saved_data from this MCP server. There is no implicit current chat; select actual owning collection/chat membership.
 
+Supply the parameters array for every SQL placeholder: $1 is parameters[0],
+$2 is parameters[1]. Values are not inferred from chat context. After a binding,
+column or permission error, correct the named cause before retrying. The permitted
+content_items schema has title, not caption. media_assets is not a granted table;
+copy exact media_asset references returned by tools or permitted analysis rows.
+
 Query `conthunt` tables directly. Complex joins, CTEs, subqueries, windows and
 aggregates are supported. Select only fields needed for the question. Prefer one
 set-based query over a query per item. Check query

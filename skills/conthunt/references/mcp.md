@@ -62,7 +62,7 @@ only for requested regeneration, files for saved reports, download for media
 access, trending for existing trend feeds, and whoami for account/credits.
 
 SEARCH QUERIES
-Write natural creator-language queries with one coherent angle each. Use vocabulary actually retrieved from current web results, autocomplete and captions; do not hardcode supposedly current entity examples. Broad descriptive probes should reveal the niche vocabulary before entity-specific refinements. For a ten-search target, use up to seven initial angles and reserve three for evidence-led refinements after reading captions and source failures. Do not concatenate the research brief or unrelated roles, scenes and keywords. Derive format terms from the user's request and observed titles/captions rather than applying a fixed format word or word-count limit. Reuse the top-level query across platforms unless vocabulary or returned results justify a platform-specific query override in the same search call. Inspect returned titles, captions and hashtags against the requested topic, format and exclusions; counts alone do not establish usefulness. Rewrite empty or off-topic queries using that evidence, and follow discovered creator or series names when they add relevant coverage. Deduplicate overlapping saved videos before judging coverage; additional distinct angles should fill gaps rather than repeat synonyms. Choose queries yourself when the objective is sufficient; ask only when missing scope would materially change the search.
+Write natural creator-language queries with one coherent angle each. Use vocabulary actually retrieved from current web results, autocomplete and captions; do not hardcode supposedly current entity examples. Broad descriptive probes should reveal the niche vocabulary before entity-specific refinements. Allocate the approved search allowance between initial discovery and refinements from observed coverage, uncertainty and marginal yield; there is no fixed split. Do not concatenate the research brief or unrelated roles, scenes and keywords. Derive format terms from the user's request and observed titles/captions rather than applying a fixed format word or word-count limit. Reuse the top-level query across platforms unless vocabulary or returned results justify a platform-specific query override in the same search call. Inspect returned titles, captions and hashtags against the requested topic, format and exclusions; counts alone do not establish usefulness. Rewrite empty or off-topic queries using that evidence, and follow discovered creator or series names when they add relevant coverage. Deduplicate overlapping saved videos before judging coverage; additional distinct angles should fill gaps rather than repeat synonyms. Choose queries yourself when the objective is sufficient; ask only when missing scope would materially change the search.
 
 Default to TikTok, Instagram Reels and YouTube Shorts together. One keyword uses
 one search call with all selected platforms. TikTok search includes Keyword and
@@ -139,8 +139,15 @@ recipes for complete answer coverage and the actual pinned analyses.
 
 Refine from observed vocabulary or broaden restrictive defaults only when this
 would add useful coverage. Preserve explicit requirements; never silently widen
-the final date scope. Use TikTok most-liked on useful angles for engagement
-objectives alongside relevance searches. Stop when the request is covered or
+the final date scope. Choose supported provider sorts from the objective and
+observed results; compare alternatives when useful rather than always prescribing
+one sort. Investigate unexpected empty results using the provider response,
+query, supported controls and results from other sources before concluding there
+are no suitable videos. Choose a bounded diagnostic within the remaining search
+allowance; record what changed and whether it restored results. Preserve requested
+platforms and the exact analyzed publication window, even when testing a broader
+provider filter. Pass explicit date controls; omitted controls receive MCP defaults.
+Stop when the request is covered or
 another search is unlikely to help; do not spend the wallet merely to exhaust it.
 MCP search currently exposes start only. SQL pagination reads saved rows; it is
 not provider continuation. Do not invent search_id continuation arguments. If
@@ -165,6 +172,18 @@ terminology with provenance. State what the remaining cap permits; passing a
 chat_id alone does not communicate an external conversation's complete brief.
 Existing captions are candidate evidence, not video-analysis findings.
 
+Use captions, titles and hashtags as supporting relevance signals: relevant text
+can increase confidence, but missing, vague or unrelated text does not establish
+that a video is irrelevant. For initial analysis, hand off saved search or board
+sources for bulk selection with objective-matched filters and sorting; do not
+require caption-screen SQL or manually selected content_item_ids before analysis.
+Choose mixed or separate platform selections from the objective and available
+metric coverage, keeping requested limits within the approved target. Establish
+actual content relevance through video analysis. Explicit IDs may help later
+targeted follow-ups, comparisons or recovery. Popularity and caption vocabulary
+alone do not establish relevance. Exclude mismatches established by video evidence
+from recommendations and disclose uncertain matches.
+
 Per-video extraction asks observable questions about one video. Cross-video
 comparisons, frequencies, rankings and ideas are synthesis obligations, not
 questions to repeat independently for every video. Preserve requested tasks
@@ -179,6 +198,11 @@ request/message receipts. There is no additional MCP coordinator approval cycle.
 Inspect with thread_id alone or execution_id alone. Adding prompt to the existing
 selector steers/follows up on that conversation. Do not combine both selectors.
 Prefer continuing the same thread; do not create another for progress or repair.
+After inspecting completed work, decide whether a top-up adds useful missing
+coverage within the remaining approved target and funds, regardless of batch
+size. Continue on the same thread, reuse successful work and explain any shortfall.
+A new selection is not a substitute for inspecting pending work or retrying a
+failed operation according to its returned recovery instructions.
 
 The tool waits up to 25 seconds after acceptance, then may return pending work.
 Accepted does not mean consumed, analyzed or complete. A bounded wait or client

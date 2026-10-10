@@ -391,8 +391,9 @@ visual facts from metadata. `video_analysis_enrichments` holds versioned creativ
 analysis. A metadata-only query or a score is not a read of supporting evidence.
 
 Citations use `[title or creator](<app-origin>/app/chats/<owning_chat_ref>?item=<video_ref>)` beside supported claims.
-Only cite videos whose actual successful answer or completed full analysis you
-read. Copy quotations exactly. Permission and saved evidence are independently
+Discovery and metadata claims may cite videos whose saved metadata you read.
+Video-content claims require an actual successful supporting answer or completed
+full analysis you read. Copy quotations exactly. Permission and saved evidence are independently
 checked by application code; a SQL literal containing an ID is not proof.
 
 ## Cached insights

@@ -20,7 +20,7 @@ ContHunt exposes thirteen MCP tools. Advertised schemas establish what your conn
 
 No separate SearchAgent, schema, saved getter or SQL write tool is required.
 
-`deep_search(prompt=objective)` starts work and returns the owning chat plus a separate native thread/execution. `deep_search(thread_id=returned_thread)` inspects; adding a prompt steers active work or follows up after completion. An execution selector reads a particular attempt. Do not treat acceptance as consumed/completed or start again because the observation timed out.
+For a new investigation only, `deep_search(prompt=objective)` starts work and returns the owning chat plus a separate native thread/execution. `deep_search(thread_id=returned_thread)` inspects; adding a prompt steers active work or follows up after completion. An execution selector reads a particular attempt. Do not treat acceptance as consumed/completed or start again because the observation timed out.
 
 Long-video `start` takes a supported video URL or saved asset plus objective/questions. `get` takes only the existing asset and native run ID, with no URL or start-only inputs. Pending, failed and unavailable are not completed answers. Use the returned owning chat to link the exact saved video in your answer.
 
@@ -36,7 +36,7 @@ These are argument patterns, not executed calls. Replace placeholders with actua
 - Steer/follow up: `deep_search(thread_id=returned_thread, prompt=new_instructions, request_id=new_retained_key)`.
 - Continue after direct discovery: use the same thread with a prompt containing new saved search references, all queries/outcomes, useful findings and remaining approved search/video allowance. Inspect existing chat searches first, including those the specialist created.
 - Read the real report: `files(action="read", chat_id=returned_chat, path=actual_report_path)`.
-- Repair: follow up on the same thread with the specific missing obligation, reuse saved evidence, prohibit new search/analysis, preserve the real report path, and verify the revision.
+- Repair: follow up on the same thread with the specific missing obligation, reuse saved evidence; allow necessary missing research within remaining scope and recovery rules, preserve successes and the real report path, and verify the revision.
 
 ## Saved query map
 
@@ -56,19 +56,17 @@ analyzing and comparing a collection. Search results, captions, popularity and
 trend listings do not prove that video contents have been analyzed.
 
 RESEARCH BUDGET
-For new collection research, present three objective-based scope options before
-paid execution unless the user has already selected or explicitly authorized a
-concrete scope. Make the largest option at least 400 videos and 10 keyword searches,
-up to the 500-video tool limit, with meaningful smaller alternatives. Preserve
-explicit user caps, board-only scope and required affordable fallbacks. Describe
-expected research depth and benefit; video/search counts are not credit estimates.
-After selection, use whoami for credits when needed and distinguish Search and AI
-funds. Do not invent prices or affordability. Honor explicitly authorized scope;
-actual wallet authorization is enforced by the backend. Put the selected requested
-video target, total keyword-search allowance, searches already used and remaining
-allowance in the Deep Search prompt. Never silently substitute a small batch for
-that target. No private app budget tools or extra specialist approval cycle are
-required; scope selection uses the external client's normal conversation.
+For new collection research, retain the 400-video / 10-keyword-search guidance,
+up to the 500-video tool limit. An explicit user count or cap takes precedence;
+otherwise choose the video target and search allowance from the objective,
+existing evidence and available funds without requiring a budget-choice question.
+Explain the chosen scope briefly when useful; do not silently substitute a small
+batch for it. Offer alternatives when useful, not as a mandatory approval gate.
+Video/search counts are not credit estimates; use whoami when funds need checking
+and do not invent prices or affordability. Preserve board-only scope and explicit
+spending restrictions; actual wallet authorization is enforced by the backend.
+Pass the chosen video target, total keyword-search allowance, searches already
+used and remaining allowance in the Deep Search prompt.
 
 Use creator for a live profile or creator videos; video for genuine pasted source
 URLs; analyze_video for an individual supported short source; analyze_long_video
@@ -86,7 +84,9 @@ Write natural creator-language queries with one coherent angle each. Use vocabul
 
 Default to TikTok, Instagram Reels and YouTube Shorts together. One keyword uses
 one search call with all selected platforms. TikTok search includes Keyword and
-Top sources. Do not split the same keyword into separate calls per platform.
+Top sources. Keep initial keyword searches combined across selected platforms.
+A supported targeted retry may use only failed sources, preserving successful
+results; inspect failures and recovery instructions first.
 Honor explicit platform selection. Use the same query across platforms unless
 retrieved vocabulary or result quality justifies a platform-specific override.
 
@@ -125,6 +125,11 @@ and results through documented SQL. Before additional discovery, including after
 Deep Search finishes, inspect all existing parent-chat searches, whether created
 externally or by the specialist. Reuse useful sources, identify remaining gaps and
 decide whether to search directly, continue Deep Search or answer from evidence.
+One executed new keyword-search call counts once across selected platforms,
+including same-keyword refinements and executed failures. Direct and specialist
+calls share the allowance. Validation rejection and identical-request recovery
+do not add a search; native continuation pages are not new keyword searches,
+but still use funds. A targeted retry creating a new search counts once.
 Reconcile executed keyword searches against the shared allowance; validation
 rejections are not executed searches. Correct the named validation error before
 resubmission; inspect uncertain paid outcomes and retry provider failures only
@@ -280,8 +285,10 @@ After Deep Search completes, read the actual returned report using files and its
 owning chat. Check every requested obligation, leading citations and numerical
 claims against saved evidence. Do not announce an unread/missing report as done.
 If repair is needed, send one specific correction to the same Deep Search thread:
-reuse saved evidence, preserve completed work, no new paid research, and revise
-the same real output path. Inspect that revision and verify it before delivery.
+reuse saved evidence and preserve completed work. Report-only edits need no new
+research; if evidence is missing, allow necessary searches or analysis within the
+remaining scope, following failure recovery rules. Do not repeat successful work
+or exceed explicit caps. Revise the same real output path. Inspect that revision and verify it before delivery.
 Requested follow-ups use the same thread/evidence; do not restart identical work.
 
 Answer the user's question first. Use clear findings, exact comparisons and

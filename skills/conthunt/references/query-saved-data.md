@@ -2,7 +2,7 @@
 
 Read this reference when using query_saved_data. Follow the main skill for specialist operations.
 
-Application identifiers use descriptive references such as video_<12-character body>, media_asset_<body>, search_<body>, private_board_<body> and public_board_<body>. Copy exact references and labels; never infer or invent identifiers. Never change a reference prefix or reuse its body for another resource kind. Legacy short references and UUIDs remain accepted. Bind references as typed SQL parameters. Video references identify content-item citations; media_asset references identify exact media versions, not video citations. An analysis ID is not its media asset: select video_analyses.media_asset_id alongside video_analyses.id and copy the returned media_asset reference for an asset pin. If the exact asset has not been retrieved, query it before authoring a pinned citation; never derive it from an analysis ID. Pi worker, task and operation handles retain their original format and are not application UUIDs. Registered question and rubric numbers retain their numeric meaning.
+Application identifiers use descriptive references such as video_<12-character body>, media_asset_<body>, search_<body>, private_board_<body> and public_board_<body>. Copy exact references and labels; never infer or invent identifiers. Never change a reference prefix or reuse its body for another resource kind. MCP accepts descriptive references, legacy short references and UUID identifier inputs where advertised; prefer exact returned descriptive references. Bind application references as {kind,reference} SQL parameters. Forward retrieved source references in Deep Search briefs and steering messages. Video references identify content-item citations; media_asset references identify exact media versions, not video citations. An analysis ID is not its media asset: select video_analyses.media_asset_id alongside video_analyses.id and copy the returned media_asset reference for an asset pin. If the exact asset has not been retrieved, query it before authoring a pinned citation; never derive it from an analysis ID. Native thread_id, execution_id, run_id, message_id and request_id retain their original format. Registered question and rubric numbers retain their numeric meaning.
 
 External citations are ordinary Markdown with titles and absolute ContHunt UI URLs. Use the configured app origin in MCP server instructions or returned chat_url/links.item. Use /app/chats/<chat_ref>?item=<video_ref>, /app/chats/<chat_ref>?search=<search_ref>, /app/boards/<board_ref>?item=<video_ref>, /app/public-boards/<actual_slug>?item=<video_ref>, and /app/chats/<chat_ref>?file=<encoded_actual_path>. Append asset=<asset_ref> for exact pinned media. Compact references work in these URLs; the UI resolves them. Select verified source membership for links; never invent a parent/slug/path. Use only ContHunt UI links in answers, not platform/CDN URLs or bare #media fragments. Missing destinations remain unavailable. Reuse saved results before acquiring paid evidence.
 
@@ -18,15 +18,15 @@ aggregates are supported. Select only fields needed for the question. Prefer one
 set-based query over a query per item. Check query
 errors and truncation before interpreting results. For large sets aggregate in
 SQL; for pages order explicitly with an ID tie-breaker and NULLS LAST.
-Results are `{columns, rows, truncated}`. Rows are positional arrays; SQL NULL is
+Results are {columns, rows, truncated}. When truncated, page the same scoped, ordered query using LIMIT/OFFSET. Do not claim to have read omitted rows. Rows are positional arrays; SQL NULL is
 JSON null and an empty rows array means no visible matches. Keep scope filters.
 COUNT queries return a row even for empty sets. The reader returns at most 500
 rows; aggregate or page larger sets in SQL.
 
 Application identifiers use descriptive references. Use parameters such as
 `parameters: [{kind: "video", reference: "the retrieved reference"}]` with $1::uuid.
-The registered kind resolves the reference under your authenticated permissions before SQL executes. Results project application identifiers into descriptive references.
-Give selected columns unique aliases. Physical UUID columns are typed automatically. Use referenceColumns for computed UUID values and jsonReferencePaths for computed JSON identifier paths; use an empty path map for ordinary JSON. Unknown UUID/JSON lineage fails closed.
+The supplied kind resolves the reference under your authenticated permissions before SQL executes. Results project application identifiers into descriptive references.
+Give selected columns unique aliases. Physical UUID columns are typed automatically. UNION and computed expressions can lose that identity. referenceColumns maps selected output aliases to kind strings, for example {"content_item_id":"video"}; never map table names, WHERE-only columns or nested objects. Use referenceColumns for computed identifiers, including UUIDs cast to text, and jsonReferencePaths for computed JSON identifier paths; an empty path map only permits UUID-free ordinary JSON. Remaining UUID values fail closed, including nested arrays and JSON. Never embed UUIDs in SQL or pass them as ordinary string parameters.
 Include purpose with every SQL call: a short 3–4-word description such as "Read saved video answers".
 Use actual returned video references in citations, never media_asset references.
 
@@ -207,7 +207,7 @@ media_availability,admission_order)` is the admitted root cohort.
 source_media_asset_id. Private source deletion preserves admitted history;
 borrowed public evidence depends on its current publication and exact pin.
 `research_operation_videos(operation_id,research_run_id,content_item_id,
-requested_order)` identifies each call's subset. Preserve exact media references.
+requested_order,requested_question_nos,requested_rubric_nos)` identifies each call's subset and per-video work. NULL work arrays mean all call definitions for historical admissions; empty arrays mean no work for that phase. When joining videos to requested questions or rubrics, restrict to the video's work array. Preserve exact media references.
 
 ## Definitions, answers and assessments
 
@@ -240,12 +240,38 @@ identity includes all answer parameters, not just question wording.
   score,score_scale)` distinguishes `jev_quality_1_5` from historical
   `legacy_quality_0_3`. Never mix the scales. Non-assessable rows have NULL score.
 - `research_eligibility_assessments(evaluation_id,eligibility)` stores eligibility
-  as a document; inspect its keys and saved claims before choosing recommendations.
+  as plain text: `matches`, `does_not_match` or `uncertain`. Main recommendations
+  require `eligibility='matches'`; no JSON operators are needed.
   No completed eligibility assessment means no confirmed main recommendation.
+
+For parent report review, discover the actual operation reference before querying its evidence. Bind the actual owning chat from returned MCP selectors or verified source membership; copy the returned id exactly. Never construct an operation reference from its prefix, a task number or a report title.
+
+```sql
+SELECT id,status,created_at
+FROM conthunt.research_analysis_operations
+WHERE chat_id=$1::uuid AND id=research_run_id
+ORDER BY created_at DESC,id DESC
+LIMIT 10;
+```
+
+If more than one root exists, match the worker's assigned plan/objective and report evidence; do not assume the newest one is its batch. An empty lookup is unavailable evidence, not permission to invent an identifier.
 
 Example: successful answer text and its exact assessment from one operation.
 Bind $1 as `{kind: "research_operation", reference: operation_ref}`. Change grouping/filtering freely
 for the user's task; arbitrary CTEs, windows, subqueries and aggregates are valid.
+Retrieve and copy the actual reference before binding it. Select video subsets
+through membership/ranking joins; a placeholder ID is never a valid substitute.
+
+Count expected distinct answers first. Apply exactly the same operation/question
+filters to this count and the pages below; if selecting particular questions,
+add the same `b.question_no` restriction to both.
+
+```sql
+SELECT COUNT(DISTINCT (b.content_item_id,b.question_no)) AS expected_answer_count
+FROM conthunt.research_operation_answers b
+JOIN conthunt.video_question_answers a ON a.id=b.answer_id
+WHERE b.operation_id=$1::uuid AND a.status='succeeded';
+```
 
 ```sql
 SELECT b.content_item_id, c.title, c.creator_handle, c.views,
@@ -264,7 +290,87 @@ LEFT JOIN conthunt.research_question_evaluations qe
 WHERE b.operation_id=$1::uuid
   AND a.status='succeeded'
 ORDER BY b.content_item_id,b.question_no
-LIMIT 100;
+LIMIT 40 OFFSET 0;
+```
+
+Continue with `next_offset = current_offset + rows.length`: offset 60
+returning 76 rows means offset 136 next, not 76. Preserve the same filters and
+ordering. Completion means distinct answer pairs read equals expected_answer_count.
+Repeated pages, aggregates and top-example reads do not establish full coverage;
+`truncated=false` can still omit answers because of SQL LIMIT.
+
+For that single-placeholder query, use exactly `parameters: [{kind: "research_operation", reference: operation_ref}]` and a short purpose. Do not add a blank second parameter. Advance OFFSET by adding rows.length to the current offset while keeping WHERE and ORDER BY unchanged; finish when distinct answers read matches the scoped expected count, even if a limited page says truncated=false. Physical UUID columns in these recipes need no declaration. For UNION/computed identifier outputs, use a flat map such as `referenceColumns: {content_item_id: "video"}`; the key must be a selected alias, not a table or WHERE-only column.
+
+Exact pinned analysis text (one bound operation reference; never join all versions by asset):
+
+```sql
+SELECT DISTINCT e.content_item_id, a.id AS video_analysis_id, a.markdown
+FROM conthunt.research_video_evaluations e
+JOIN conthunt.video_analyses a ON a.id=e.video_analysis_id
+WHERE e.analysis_run_id=$1::uuid AND a.status='completed'
+ORDER BY e.content_item_id,a.id
+LIMIT 10 OFFSET 0;
+```
+
+Per-video ranking example: first read the registered definitions and replace criterion numbers 0 and 1 with the relevant broader criteria for the requested finding. Do not mix unrelated criteria, question-response quality or score scales. This example computes an actual mean; unknown scores are excluded rather than zero.
+
+```sql
+WITH latest AS (
+  SELECT DISTINCT ON (content_item_id) id,content_item_id,research_run_id
+  FROM conthunt.research_video_evaluations
+  WHERE analysis_run_id=$1::uuid AND rubric_phase='succeeded'
+  ORDER BY content_item_id,created_at DESC,id DESC
+)
+SELECT e.content_item_id, c.title, c.creator_handle, c.views,
+       AVG(r.score) AS mean_score,
+       COUNT(DISTINCT r.rubric_no) AS assessable_criterion_count
+FROM latest e
+JOIN conthunt.content_items c ON c.id=e.content_item_id
+JOIN conthunt.research_eligibility_assessments ea
+  ON ea.evaluation_id=e.id AND ea.eligibility='matches'
+JOIN conthunt.research_rubric_evaluations r ON r.evaluation_id=e.id
+JOIN conthunt.research_rubric_bindings b
+  ON b.research_run_id=e.research_run_id AND b.rubric_no=r.rubric_no
+WHERE b.question_no IS NULL
+  AND b.rubric_no IN (0,1) AND r.applicability='assessable'
+  AND r.score_scale='jev_quality_1_5' AND r.score BETWEEN 1 AND 5
+GROUP BY e.content_item_id,c.title,c.creator_handle,c.views
+HAVING COUNT(DISTINCT r.rubric_no)=2
+ORDER BY mean_score DESC,e.content_item_id
+LIMIT 50 OFFSET 0;
+```
+
+This ranks only matching videos with both example criteria assessable. Replace
+both the criterion numbers and the required criterion count for the requested
+comparison. Read each recommended video's supporting answers and pinned analysis;
+eligibility and quality scores do not establish observed audience outcomes.
+
+Criterion averages use the same eligible, latest-successful assessment scope.
+Rubric bindings contain IDs/numbers, not names: the text is video_rubrics.parameter.
+Keep `assessable_video_count` distinct from the number of videos with every
+comparison criterion assessable. When averaging multiple criteria, label the
+denominator as assessable observations or compute per-video means first.
+
+```sql
+WITH latest AS (
+  SELECT DISTINCT ON (content_item_id) id,content_item_id,research_run_id
+  FROM conthunt.research_video_evaluations
+  WHERE analysis_run_id=$1::uuid AND rubric_phase='succeeded'
+  ORDER BY content_item_id,created_at DESC,id DESC
+)
+SELECT r.rubric_no,vr.parameter AS criterion,AVG(r.score) AS mean_score,
+       COUNT(DISTINCT e.content_item_id) AS assessable_video_count
+FROM latest e
+JOIN conthunt.research_eligibility_assessments ea
+  ON ea.evaluation_id=e.id AND ea.eligibility='matches'
+JOIN conthunt.research_rubric_evaluations r ON r.evaluation_id=e.id
+JOIN conthunt.research_rubric_bindings b
+  ON b.research_run_id=e.research_run_id AND b.rubric_no=r.rubric_no
+JOIN conthunt.video_rubrics vr ON vr.id=b.rubric_id
+WHERE b.question_no IS NULL AND r.rubric_no IN (0,1)
+  AND r.applicability='assessable' AND r.score_scale='jev_quality_1_5'
+  AND r.score BETWEEN 1 AND 5
+GROUP BY r.rubric_no,vr.parameter ORDER BY r.rubric_no;
 ```
 
 For multiple calls, partition by content item and complete question definition,

@@ -9,7 +9,7 @@ Use saved ContHunt evidence when it answers the question; acquire new evidence w
 
 ## Tool choice
 
-Read [references/mcp.md](references/mcp.md) when choosing a tool or continuing work. Use the connected tool schemas for exact arguments and availability. If a new tool/action is absent, report that the server needs updating rather than inventing another tool.
+Read [references/mcp.md](references/mcp.md) before new discovery, Deep Search, or continuing specialist work. It explains query design, platform/date controls, tool calls, evidence coverage and report review. Use the connected tool schemas for exact arguments and availability. If a new tool/action is absent, report that the server needs updating rather than inventing another tool.
 
 - Read saved search results, boards, metrics, analyses and research answers with `query_saved_data`. Read [references/query-saved-data.md](references/query-saved-data.md) before the first SQL call; revisit only the relevant section later.
 - Use `search` for new keyword discovery. Search TikTok, Instagram Reels and YouTube Shorts unless the user selects platforms. Choose initial queries yourself for a fuzzy niche, or delegate an autonomous investigation to `deep_search`.
@@ -17,6 +17,14 @@ Read [references/mcp.md](references/mcp.md) when choosing a tool or continuing w
 - Use `boards` for create/delete/add/remove, and SQL for saved membership. Refresh `insights` only when new generation is requested.
 - Use `analyze_video` for short-video analysis, `analyze_long_video` for one long source, and `deep_search` for evidence-backed research across a set. Only the latter two delegate to specialist agents.
 - Read account/credits with `whoami` when needed, reports with `files`, media access with `download`, and platform/niche trends with `trending`.
+
+## Search and Deep Search
+
+For keyword discovery, choose distinct objective-relevant angles in natural creator language. Use one multi-platform call per keyword; TikTok includes Keyword and Top. Pass explicit recent date controls rather than relying on tool defaults. Honor the user's exact date/platform restrictions and query caps. Ground refinements in read captions, titles, dates and metric coverage; do not invent current trends or repeat synonyms to spend searches. Read saved completion/results through SQL before choosing another batch. Search saves candidates; it does not watch or analyze them. SQL paging is not provider continuation.
+
+Deep Search is a persistent hosted research specialist: it can reuse saved sources, discover candidates, analyze videos, answer per-video questions, evaluate criteria, compare the collection and save a cited report. Use it for autonomous investigations or analyzed comparisons. Supply the full objective, questions, source references, exact constraints, every existing query, searches already used, remaining caps and requested deliverables. Do not assume chat_id communicates the external conversation's full brief. Preserve the original cap across discovery and research.
+
+Read the actual returned report, verify requested deliverables and check important claims/citations against saved evidence before announcing completion. Request a specific correction on the same thread using saved evidence only, with no new searches or analysis and the same real file path; inspect the revision before delivery. Keep pending or failed work out of completed findings. Use ordinary Markdown in the external client and link the real ContHunt report for richer presentation. Keep routine execution bookkeeping out of visible prose unless requested.
 
 ## Identifiers and citations
 
